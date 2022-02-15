@@ -20,7 +20,7 @@ func NewHandlerListContainers(service listContainers.Service) *handler {
 func (h *handler) ListContainersHandler(ctx *gin.Context) {
 	containers, errListContainers := h.service.ListContainersService()
 
-	if errListContainers != http.StatusText(http.StatusOK) {
+	if errListContainers == http.StatusText(http.StatusOK) {
 		util.APIResponse(ctx, "Successfully fetched docker containers", http.StatusOK, http.MethodGet, containers)
 	} else {
 		util.APIResponse(ctx, "Failed fetching docker containers with error: "+errListContainers, http.StatusInternalServerError, http.MethodGet, containers)

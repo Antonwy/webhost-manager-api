@@ -1,9 +1,5 @@
 FROM golang:alpine
 
-# Set necessary environmet variables needed for our image
-ENV GO_ENV=production \
-  GO_PORT=3000 
-
 # Move to working directory /build
 WORKDIR /build
 

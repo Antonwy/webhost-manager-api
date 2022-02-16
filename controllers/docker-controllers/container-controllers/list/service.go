@@ -15,7 +15,7 @@ func NewServiceCreate(repository Repository) *service {
 }
 
 func (s *service) ListContainersService() ([]types.Container, string) {
-	resultCreateStudent, errCreateStudent := s.repository.ListContainersRepository()
+	list, err := s.repository.ListContainersRepository()
 
-	return resultCreateStudent, errCreateStudent
+	return list, err
 }

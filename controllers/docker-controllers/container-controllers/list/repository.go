@@ -25,12 +25,8 @@ func NewRepositoryCreate(client *client.Client) *repository {
 func (r *repository) ListContainersRepository() ([]types.Container, string) {
 
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		return []types.Container{}, err.Error()
-	}
 
-	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	containers, err := r.client.ContainerList(ctx, types.ContainerListOptions{})
 	if err != nil {
 		return []types.Container{}, err.Error()
 	}

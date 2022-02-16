@@ -6,6 +6,9 @@ import (
 	listContainers "whm-api/controllers/docker-controllers/container-controllers/list"
 	listContainersHandler "whm-api/handlers/docker-handlers/container-handlers/list"
 
+	createWordPress "whm-api/controllers/docker-controllers/wordpress-controllers/create"
+	createWordPressHandler "whm-api/handlers/docker-handlers/wordpress-handlers/create"
+
 	"github.com/docker/docker/client"
 )
 
@@ -16,10 +19,23 @@ func InitDockerRoutes(router *gin.Engine) {
 		panic(err)
 	}
 
+	// DOCKER
 	listContainersRepository := listContainers.NewRepositoryCreate(cli)
 	listContainersService := listContainers.NewServiceCreate(listContainersRepository)
 	listContainersHandler := listContainersHandler.NewHandlerListContainers(listContainersService)
 
-	groupRoute := router.Group("/api/v1/docker") //.Use(middleware.Auth())
-	groupRoute.GET("/containers", listContainersHandler.ListContainersHandler)
+	containersRoute := router.Group("/api/v1/docker") //.Use(middleware.Auth())
+	containersRoute.GET("/containers", listContainersHandler.ListContainersHandler)
+
+	// WORDPRESS
+	wordpressRoute := containersRoute.Group("/wordpress")
+	InitDockerWordPressRoutes(wordpressRoute, cli)
+}
+
+func InitDockerWordPressRoutes(router *gin.RouterGroup, cli *client.Client) {
+	createWordPressRepository := createWordPress.NewRepositoryCreate(cli)
+	createWordPressService := createWordPress.NewServiceCreate(createWordPressRepository)
+	createWordPressHandler := createWordPressHandler.NewHandlerCreateWordPress(createWordPressService)
+
+	router.POST("/", createWordPressHandler.CreateWordPressHandler)
 }

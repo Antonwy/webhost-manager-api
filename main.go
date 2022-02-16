@@ -4,6 +4,7 @@ import (
 	"log"
 	route "whm-api/routes"
 	util "whm-api/utils"
+	"whm-api/utils/db"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,7 @@ import (
 
 func main() {
 
+	db.Setup()
 	router := SetupRouter()
 
 	log.Fatal(router.Run(":" + util.GodotEnv("GO_PORT")))

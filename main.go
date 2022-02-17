@@ -6,10 +6,14 @@ import (
 	util "whm-api/utils"
 	"whm-api/utils/db"
 
+	"github.com/docker/docker/client"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
 // example: https://github.com/restuwahyu13/gin-rest-api
+// another: https://dev.to/techschoolguru/implement-restful-http-api-in-go-using-gin-4ap1
 
 func main() {
 
@@ -31,7 +35,18 @@ func SetupRouter() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	route.InitDockerRoutes(router)
+	router.Use(cors.Default())
+	router.Use(gzip.Gzip(gzip.BestCompression))
+
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		panic(err)
+	}
+
+	apiRouter := router.Group("/api/v1")
+	route.InitDockerRoutes(apiRouter, cli)
+	route.InitWordPressRoutes(apiRouter, cli)
+	route.InitStackRoutes(apiRouter, cli)
 
 	return router
 }

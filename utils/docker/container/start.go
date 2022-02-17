@@ -2,7 +2,6 @@ package dockerContainer
 
 import (
 	"fmt"
-	db_containers "whm-api/utils/db/containers"
 	"whm-api/utils/db/ports"
 
 	"github.com/docker/docker/api/types"
@@ -14,14 +13,10 @@ func (container DockerContainer) Start() error {
 		return err
 	}
 
-	dbContainer := db_containers.DBContainer{
-		ID:      container.ID,
-		StackID: container.StackID,
-	}
-
+	dbContainer := container.AsDBContainer()
 	dbContainer.Create()
 
-	for k, _ := range container.PortBindings {
+	for k := range container.PortBindings {
 		port := ports.Port{
 			ContainerID: container.ID,
 			Port:        string(k),

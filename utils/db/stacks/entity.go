@@ -1,11 +1,32 @@
 package stacks
 
 import (
+	"whm-api/utils/docker"
 	dockerContainer "whm-api/utils/docker/container"
 )
 
 type Stack struct {
-	ID         string `db:"id"`
-	Name       string `db:"name"`
-	Containers []dockerContainer.DockerContainer
+	ID          string                            `db:"id" json:"id"`
+	Name        string                            `db:"name" json:"name"`
+	Config      docker.Config                     `json:"config"`
+	Containers  []dockerContainer.DockerContainer `json:"containers"`
+	NetworkName string                            `db:"network_name"  json:"network_name"`
+	NetworkID   string                            `json:"network_id"`
+	Type        string                            `db:"type"  json:"type"`
+}
+
+func (stack Stack) Response() ResponseStack {
+	return ResponseStack{
+		ID:          stack.ID,
+		Name:        stack.Name,
+		NetworkName: stack.NetworkName,
+		Type:        stack.Type,
+	}
+}
+
+type ResponseStack struct {
+	ID          string `db:"id" json:"id"`
+	Name        string `db:"name" json:"name"`
+	NetworkName string `db:"network_name"  json:"network_name"`
+	Type        string `db:"type"  json:"type"`
 }

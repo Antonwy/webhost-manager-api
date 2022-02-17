@@ -2,7 +2,6 @@ package dockerContainer
 
 import (
 	"fmt"
-	db_containers "whm-api/utils/db/containers"
 
 	"github.com/docker/docker/api/types"
 )
@@ -21,11 +20,9 @@ func (container *DockerContainer) Remove() {
 
 	if err := cli.ContainerRemove(ctx, container.ID, types.ContainerRemoveOptions{
 		RemoveVolumes: true,
+		Force:         true,
 	}); err == nil {
-		dbContainer := db_containers.DBContainer{
-			ID:      container.ID,
-			StackID: container.StackID,
-		}
+		dbContainer := container.AsDBContainer()
 
 		dbContainer.Remove()
 	}

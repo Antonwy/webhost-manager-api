@@ -32,14 +32,3 @@ func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string
 		ctx.JSON(StatusCode, jsonResponse)
 	}
 }
-
-func ValidatorErrorResponse(ctx *gin.Context, StatusCode int, Method string, Error interface{}) {
-	errResponse := ErrorResponse{
-		StatusCode: StatusCode,
-		Method:     Method,
-		Error:      Error,
-	}
-
-	ctx.JSON(StatusCode, errResponse)
-	defer ctx.AbortWithStatus(StatusCode)
-}

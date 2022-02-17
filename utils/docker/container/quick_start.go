@@ -2,18 +2,9 @@ package dockerContainer
 
 import (
 	"errors"
-	"whm-api/utils/docker"
 )
 
 func (container *DockerContainer) QuickStart() error {
-	if networkName := container.NetworkName; networkName != "" {
-		id, err := docker.CreateNetwork(networkName, container.Config)
-
-		if err == nil {
-			container.NetworkID = id
-		}
-	}
-
 	if err := container.PullImage(); err != nil {
 		return errors.New("Error pulling " + container.Image)
 	}

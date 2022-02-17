@@ -3,6 +3,7 @@ package listContainers
 import (
 	"context"
 	"net/http"
+	"whm-api/utils/docker"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -26,7 +27,13 @@ func (r *repository) ListContainersRepository() ([]types.Container, string) {
 
 	ctx := context.Background()
 
-	containers, err := r.client.ContainerList(ctx, types.ContainerListOptions{})
+	config := docker.Config{
+		Context: ctx,
+		Client:  r.client,
+	}
+
+	containers, err := config.ListContainers()
+
 	if err != nil {
 		return []types.Container{}, err.Error()
 	}

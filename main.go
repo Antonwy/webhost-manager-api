@@ -43,7 +43,7 @@ func SetupRouter() *gin.Engine {
 		panic(err)
 	}
 
-	apiRouter := router.Group("/api/v1")
+	apiRouter := router.Group("/v1")
 	route.InitDockerRoutes(apiRouter, cli)
 	route.InitWordPressRoutes(apiRouter, cli)
 	route.InitStackRoutes(apiRouter, cli)

@@ -42,7 +42,6 @@ func SetupRouter() *gin.Engine {
 	if err != nil {
 		panic(err)
 	}
-
 	apiRouter := router.Group("/v1")
 	route.InitDockerRoutes(apiRouter, cli)
 	route.InitWordPressRoutes(apiRouter, cli)

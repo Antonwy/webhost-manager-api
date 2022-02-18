@@ -33,8 +33,7 @@ func InitWordPressRoutes(router *gin.RouterGroup, cli *client.Client) {
 	createWordPressService := createWordPress.NewServiceCreate(createWordPressRepository)
 	createWordPressHandler := createWordPressHandler.NewHandlerCreateWordPress(createWordPressService)
 
-	wordpressRoute := router.Group("/wordpress") //.Use(middleware.Auth())
-	wordpressRoute.POST("/", createWordPressHandler.CreateWordPressHandler)
+	router.POST("/wordpress", createWordPressHandler.CreateWordPressHandler)
 }
 
 func InitStackRoutes(router *gin.RouterGroup, cli *client.Client) {
@@ -46,7 +45,6 @@ func InitStackRoutes(router *gin.RouterGroup, cli *client.Client) {
 	removeStackService := removeStack.NewService(removeStackRepository)
 	removeStackHandler := removeStackHandler.NewHandler(removeStackService)
 
-	stacksRoute := router.Group("/stacks") //.Use(middleware.Auth())
-	stacksRoute.GET("/", listStacksHandler.ListStacksHandler)
-	stacksRoute.DELETE("/:id", removeStackHandler.RemoveStackHandler)
+	router.GET("/stacks", listStacksHandler.ListStacksHandler)
+	router.DELETE("/stacks/:id", removeStackHandler.RemoveStackHandler)
 }

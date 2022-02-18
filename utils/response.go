@@ -9,12 +9,7 @@ type Responses struct {
 	Method     string      `json:"method"`
 	Message    string      `json:"message"`
 	Data       interface{} `json:"data"`
-}
-
-type ErrorResponse struct {
-	StatusCode int         `json:"statusCode"`
-	Method     string      `json:"method"`
-	Error      interface{} `json:"error"`
+	Error      bool        `json:"error"`
 }
 
 func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string, Data interface{}) {
@@ -26,9 +21,11 @@ func APIResponse(ctx *gin.Context, Message string, StatusCode int, Method string
 	}
 
 	if StatusCode >= 400 {
+		jsonResponse.Error = true
 		ctx.JSON(StatusCode, jsonResponse)
 		defer ctx.AbortWithStatus(StatusCode)
 	} else {
+		jsonResponse.Error = false
 		ctx.JSON(StatusCode, jsonResponse)
 	}
 }

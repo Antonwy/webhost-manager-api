@@ -4,12 +4,23 @@ import (
 	"errors"
 	"strconv"
 	db_containers "whm-api/utils/db/containers"
+	"whm-api/utils/docker"
+	"whm-api/utils/docker/network"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/go-connections/nat"
 )
 
 func (c *DockerContainer) Validate() error {
+
+	if c.ConnectToProxyNetwork {
+		_, err := network.IdFromName(docker.ProxyNetworkName, c.Config)
+
+		if err != nil {
+			return errors.New("Couldn't find proxynetwork: " + docker.ProxyNetworkName)
+		}
+	}
+
 	dockerContainers, err := c.Config.ListContainers()
 	if err != nil {
 		return err

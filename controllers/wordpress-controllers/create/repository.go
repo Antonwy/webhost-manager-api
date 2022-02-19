@@ -52,6 +52,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		Config:      config,
 		NetworkName: wpNetworkName,
 		Type:        stackType,
+		Url:         input.Url,
 	}
 
 	if err := stack.Create(); err != nil {
@@ -85,6 +86,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 			fmt.Sprintf("WORDPRESS_DB_PASSWORD=%s", input.DBPassword),
 			"WORDPRESS_DB_NAME=wordpress",
 			fmt.Sprintf("WORDPRESS_DB_HOST=%s", mariadb.Name),
+			fmt.Sprintf("VIRTUAL_HOST=%s", stack.Url),
 		},
 		NetworkID: mariadb.NetworkID,
 		PortBindings: map[nat.Port]nat.Port{

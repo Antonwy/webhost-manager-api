@@ -10,3 +10,5 @@ type Config struct {
 	Context context.Context
 	Client  *client.Client
 }
+
+const ProxyNetworkName = "reverse-proxy-net"

@@ -1,14 +1,20 @@
 package stacks
 
-import "whm-api/utils/docker/network"
+import (
+	"whm-api/utils/docker/network"
+)
 
-func (stack Stack) StackStart() error {
-	for _, c := range stack.Containers {
+func (stack *Stack) StackStart() error {
+	for i := range stack.Containers {
 		if stack.NetworkID != "" {
-			c.NetworkName = stack.NetworkName
+			stack.Containers[i].NetworkName = stack.NetworkName
 		}
 
-		if err := c.Validate(); err != nil {
+		if stack.Url != "" {
+			stack.Containers[i].ConnectToProxyNetwork = true
+		}
+
+		if err := stack.Containers[i].Validate(); err != nil {
 			return err
 		}
 	}
@@ -23,12 +29,13 @@ func (stack Stack) StackStart() error {
 		stack.NetworkID = id
 	}
 
-	for _, c := range stack.Containers {
-		c.NetworkID = stack.NetworkID
-		if err := c.QuickStart(); err != nil {
+	for i := range stack.Containers {
+		stack.Containers[i].NetworkID = stack.NetworkID
+		if err := stack.Containers[i].QuickStart(); err != nil {
 			stack.Remove()
 			return err
 		}
+
 	}
 
 	return nil

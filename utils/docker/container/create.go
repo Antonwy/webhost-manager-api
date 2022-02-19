@@ -2,9 +2,11 @@ package dockerContainer
 
 import (
 	"fmt"
+	"whm-api/utils/docker"
+	"whm-api/utils/docker/network"
 
 	dcontainer "github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/network"
+	dockerNetwork "github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 )
 
@@ -32,7 +34,21 @@ func (container *DockerContainer) Create() error {
 	}, nil, nil, container.Name)
 
 	if net := container.NetworkID; net != "" {
-		container.Config.Client.NetworkConnect(container.Config.Context, net, res.ID, &network.EndpointSettings{})
+		container.Config.Client.NetworkConnect(container.Config.Context, net, res.ID, &dockerNetwork.EndpointSettings{})
+	}
+
+	if container.ConnectToProxyNetwork {
+		fmt.Println("Connecting with " + docker.ProxyNetworkName)
+		id, err := network.IdFromName(docker.ProxyNetworkName, container.Config)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		if err := container.Config.Client.NetworkConnect(container.Config.Context, id, res.ID, &dockerNetwork.EndpointSettings{}); err != nil {
+			fmt.Println(err)
+			return err
+		}
 	}
 
 	if err != nil {

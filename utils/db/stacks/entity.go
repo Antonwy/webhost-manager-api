@@ -13,6 +13,7 @@ type Stack struct {
 	NetworkName string                            `db:"network_name"  json:"network_name"`
 	NetworkID   string                            `json:"network_id"`
 	Type        string                            `db:"type"  json:"type"`
+	Url         string                            `db:"url"  json:"url"`
 }
 
 func (stack Stack) Response() ResponseStack {
@@ -21,6 +22,7 @@ func (stack Stack) Response() ResponseStack {
 		Name:        stack.Name,
 		NetworkName: stack.NetworkName,
 		Type:        stack.Type,
+		Url:         stack.Url,
 	}
 }
 
@@ -29,4 +31,5 @@ type ResponseStack struct {
 	Name        string `db:"name" json:"name"`
 	NetworkName string `db:"network_name"  json:"network_name"`
 	Type        string `db:"type"  json:"type"`
+	Url         string `db:"url"  json:"url"`
 }

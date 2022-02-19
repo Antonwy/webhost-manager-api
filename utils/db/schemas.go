@@ -8,7 +8,8 @@ const initialSchema string = `
                 primary key,
         name         varchar not null,
         type         varchar,
-        network_name varchar
+        network_name varchar,
+        url          varchar
     );
 
     alter table stacks

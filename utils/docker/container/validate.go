@@ -33,9 +33,9 @@ func (c *DockerContainer) Validate() error {
 			return errors.New("There is already a container with the name " + c.Name)
 		}
 
-		if err := exposesSamePort(container.Ports, c.PortBindings); err != nil {
-			return err
-		}
+		// if err := exposesSamePort(container.Ports, c.PortBindings); err != nil {
+		// 	return err
+		// }
 	}
 
 	if c.NetworkName != "" {

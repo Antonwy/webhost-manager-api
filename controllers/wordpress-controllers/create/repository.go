@@ -101,7 +101,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 
 	if err := stack.StackStart(); err != nil {
 		stack.Remove()
-		return stacks.Stack{}, "Couldn't create new container stack because" + err.Error()
+		return stacks.Stack{}, "Couldn't create new container stack because " + err.Error()
 	}
 
 	return stack, http.StatusText(http.StatusOK)

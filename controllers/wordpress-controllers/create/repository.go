@@ -90,7 +90,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		},
 		NetworkID: mariadb.NetworkID,
 		PortBindings: map[nat.Port]nat.Port{
-			nat.Port(input.Port): "80/tcp",
+			"0": "80/tcp",
 		},
 		StackID: stack.ID,
 	}

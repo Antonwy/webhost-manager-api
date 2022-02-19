@@ -37,19 +37,4 @@ const initialSchema string = `
 
     create unique index if not exists containers_id_uindex
         on containers (id);
-
-    create table if not exists ports
-    (
-        container_id varchar
-            constraint ports_containers_id_fk
-                references containers
-                on delete cascade,
-        port         varchar not null
-    );
-
-    alter table ports
-        owner to whm;
-
-    create unique index if not exists ports_port_uindex
-        on ports (port);
 `

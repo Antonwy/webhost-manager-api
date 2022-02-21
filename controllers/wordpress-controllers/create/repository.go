@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	util "whm-api/utils"
 	"whm-api/utils/db/stacks"
@@ -77,17 +78,27 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		StackID: stack.ID,
 	}
 
+	virtualHostUrls := []string{stack.Url, "www." + stack.Url}
+	virtualHostsJoined := strings.Join(virtualHostUrls, ",")
+
+	envs := []string{
+		fmt.Sprintf("WORDPRESS_DB_USER=%s", input.DBUsername),
+		fmt.Sprintf("WORDPRESS_DB_PASSWORD=%s", input.DBPassword),
+		"WORDPRESS_DB_NAME=wordpress",
+		fmt.Sprintf("WORDPRESS_DB_HOST=%s", mariadb.Name),
+		fmt.Sprintf("VIRTUAL_HOST=%s", virtualHostsJoined),
+	}
+
+	if input.SSLEmail != "" {
+		envs = append(envs, fmt.Sprintf("LETSENCRYPT_HOST=%s", virtualHostsJoined))
+		envs = append(envs, fmt.Sprintf("LETSENCRYPT_EMAIL=%s", input.SSLEmail))
+	}
+
 	wp := dockerContainer.DockerContainer{
-		Config: config,
-		Name:   wpContainerName,
-		Image:  wordPressImage,
-		Env: []string{
-			fmt.Sprintf("WORDPRESS_DB_USER=%s", input.DBUsername),
-			fmt.Sprintf("WORDPRESS_DB_PASSWORD=%s", input.DBPassword),
-			"WORDPRESS_DB_NAME=wordpress",
-			fmt.Sprintf("WORDPRESS_DB_HOST=%s", mariadb.Name),
-			fmt.Sprintf("VIRTUAL_HOST=%s", stack.Url),
-		},
+		Config:    config,
+		Name:      wpContainerName,
+		Image:     wordPressImage,
+		Env:       envs,
 		NetworkID: mariadb.NetworkID,
 		PortBindings: map[nat.Port]nat.Port{
 			"0": "80/tcp",

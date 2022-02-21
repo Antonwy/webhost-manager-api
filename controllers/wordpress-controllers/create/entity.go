@@ -5,4 +5,5 @@ type InputCreateWordPress struct {
 	Url        string `json:"url" binding:"required"`
 	DBUsername string `json:"db_username" binding:"required"`
 	DBPassword string `json:"db_password" binding:"required"`
+	SSLEmail   string `json:"ssl_email"`
 }

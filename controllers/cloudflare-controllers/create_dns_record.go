@@ -17,5 +17,9 @@ func (c controller) CreateDNSRecordController(zoneID string, body io.ReadCloser)
 		return cloudflareDns.Record{}, "Couldn't fetch zone dns records."
 	}
 
+	if !record.Success {
+		return cloudflareDns.Record{}, record.Errors[0].Message
+	}
+
 	return record.Result, http.StatusText(http.StatusOK)
 }

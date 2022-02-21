@@ -9,11 +9,11 @@ import (
 )
 
 func (h *handler) CreateDNSRecordHandler(ctx *gin.Context) {
-	zones, status := h.controller.CreateDNSRecordController(ctx.Param("id"), ctx.Request.Body)
+	zone, status := h.controller.CreateDNSRecordController(ctx.Param("id"), ctx.Request.Body)
 
 	if status == http.StatusText(http.StatusOK) {
-		util.APIResponse(ctx, "Successfully created DNS record!", http.StatusOK, http.MethodGet, zones)
+		util.APIResponse(ctx, "Successfully created DNS record!", http.StatusOK, http.MethodPost, zone)
 	} else {
-		util.APIResponse(ctx, "Failed creating DNS record with error: "+status, http.StatusInternalServerError, http.MethodGet, nil)
+		util.APIResponse(ctx, "Failed creating DNS record with error: "+status, http.StatusInternalServerError, http.MethodPost, nil)
 	}
 }

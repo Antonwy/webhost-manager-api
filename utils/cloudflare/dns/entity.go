@@ -1,6 +1,8 @@
 package cloudflareDns
 
-import "time"
+import (
+	"time"
+)
 
 type DNSResponse struct {
 	Result     []Record      `json:"result"`
@@ -39,8 +41,13 @@ type Record struct {
 }
 
 type RecordCreatedResponse struct {
-	Result   Record        `json:"result"`
-	Success  bool          `json:"success"`
-	Errors   []interface{} `json:"errors"`
-	Messages []interface{} `json:"messages"`
+	Result   Record          `json:"result"`
+	Success  bool            `json:"success"`
+	Errors   []ResponseError `json:"errors"`
+	Messages []interface{}   `json:"messages"`
+}
+
+type ResponseError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }

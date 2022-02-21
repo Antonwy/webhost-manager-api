@@ -35,13 +35,7 @@ func SetupRouter() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	router.Use(cors.New(cors.Config{
-		AllowAllOrigins: true,
-		AllowOrigins:    []string{"*"},
-		AllowMethods:    []string{"*"},
-		AllowHeaders:    []string{"*"},
-		AllowWildcard:   true,
-	}))
+	router.Use(cors.Default())
 
 	router.Use(gzip.Gzip(gzip.BestCompression))
 

@@ -10,14 +10,14 @@ services:
       - POSTGRES_DB=whm-db
       - POSTGRES_USER=whm
       - POSTGRES_PASSWORD=whm-pass-123
-      - VIRTUAL_HOST=api.antonwy.me
+      - VIRTUAL_HOST=api.antonwy.me,www.api.antonwy.me
+      - LETSENCRYPT_HOST=api.antonwy.me,www.api.antonwy.me
+      - LETSENCRYPT_EMAIL=anton.wyrowski@gmail.com
       - CLOUDFLARE_TOKEN=4sH0NB9cojjtKMeq3n4ln8IFxw3sG4aj4qYhtWG0
     ports:
       - 3001:3000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - reverse-proxy-net
 
   whm-db:
     image: postgres
@@ -29,13 +29,11 @@ services:
       - POSTGRES_PASSWORD=whm-pass-123
     ports: 
       - 5432:5432
-    networks:
-        - reverse-proxy-net
 
 networks:
-  reverse-proxy-net:
-    name: reverse-proxy-net
-    external: true
+  default:
+    external:
+      name: reverse-proxy-net
 
 volumes:
   postgres-data:

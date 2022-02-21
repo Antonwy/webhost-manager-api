@@ -59,6 +59,6 @@ func InitCloudFlareRoutes(router *gin.RouterGroup) {
 	createDNSRecordHandler := handlerCloudflare.NewHandler(cloudflareController)
 
 	router.GET("/zones", listZonesHandler.ListZonesHandler)
-	router.GET("/zones/:id/records", listDNSHandler.ListZonesHandler)
+	router.GET("/zones/:id/records", listDNSHandler.ListDNSHandler)
 	router.POST("/zones/:id/records", createDNSRecordHandler.CreateDNSRecordHandler)
 }

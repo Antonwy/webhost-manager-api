@@ -36,22 +36,26 @@ func SetupRouter() *gin.Engine {
 	}
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:  []string{"*"},
-		AllowMethods:  []string{"*"},
-		AllowHeaders:  []string{"*"},
-		AllowWildcard: true,
+		AllowAllOrigins: true,
+		AllowOrigins:    []string{"*"},
+		AllowMethods:    []string{"*"},
+		AllowHeaders:    []string{"*"},
+		AllowWildcard:   true,
 	}))
 
 	router.Use(gzip.Gzip(gzip.BestCompression))
 
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+
 	if err != nil {
 		panic(err)
 	}
+
 	apiRouter := router.Group("/v1")
 	route.InitDockerRoutes(apiRouter, cli)
 	route.InitWordPressRoutes(apiRouter, cli)
 	route.InitStackRoutes(apiRouter, cli)
+	route.InitCloudFlareRoutes(apiRouter)
 
 	return router
 }

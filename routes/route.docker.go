@@ -3,6 +3,7 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 
+	cloudflareControllers "whm-api/controllers/cloudflare-controllers"
 	listContainers "whm-api/controllers/docker-controllers/container-controllers/list"
 	listStacks "whm-api/controllers/stacks-controllers/list"
 	listStacksHandler "whm-api/handlers/stacks-handlers/list"
@@ -14,6 +15,8 @@ import (
 
 	createWordPress "whm-api/controllers/wordpress-controllers/create"
 	createWordPressHandler "whm-api/handlers/wordpress-handlers/create"
+
+	handlerCloudflare "whm-api/handlers/cloudflare-handlers"
 
 	"github.com/docker/docker/client"
 )
@@ -47,4 +50,15 @@ func InitStackRoutes(router *gin.RouterGroup, cli *client.Client) {
 
 	router.GET("/stacks", listStacksHandler.ListStacksHandler)
 	router.DELETE("/stacks/:id", removeStackHandler.RemoveStackHandler)
+}
+
+func InitCloudFlareRoutes(router *gin.RouterGroup) {
+	cloudflareController := cloudflareControllers.NewController()
+	listZonesHandler := handlerCloudflare.NewHandler(cloudflareController)
+	listDNSHandler := handlerCloudflare.NewHandler(cloudflareController)
+	createDNSRecordHandler := handlerCloudflare.NewHandler(cloudflareController)
+
+	router.GET("/zones", listZonesHandler.ListZonesHandler)
+	router.GET("/zones/:id/records", listDNSHandler.ListZonesHandler)
+	router.POST("/zones/:id/records", createDNSRecordHandler.CreateDNSRecordHandler)
 }

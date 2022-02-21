@@ -11,6 +11,7 @@ services:
       - POSTGRES_USER=whm
       - POSTGRES_PASSWORD=whm-pass-123
       - VIRTUAL_HOST=api.antonwy.me
+      - CLOUDFLARE_TOKEN=4sH0NB9cojjtKMeq3n4ln8IFxw3sG4aj4qYhtWG0
     ports:
       - 3001:3000
     volumes:

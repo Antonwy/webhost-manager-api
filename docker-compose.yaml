@@ -15,6 +15,8 @@ services:
       - LETSENCRYPT_HOST=api.antonwy.me,www.api.antonwy.me
       - LETSENCRYPT_EMAIL=anton.wyrowski@gmail.com
       - CLOUDFLARE_TOKEN=4sH0NB9cojjtKMeq3n4ln8IFxw3sG4aj4qYhtWG0
+      - USER_EMAIL=anton.wyrowski@gmail.com
+      - USER_PASSWORD=p6mPx6XPqNXeKCn7
     ports:
       - 3001:3000
     volumes:

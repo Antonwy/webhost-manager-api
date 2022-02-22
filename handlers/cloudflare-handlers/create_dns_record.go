@@ -14,6 +14,6 @@ func (h *handler) CreateDNSRecordHandler(ctx *gin.Context) {
 	if status == http.StatusText(http.StatusOK) {
 		util.APIResponse(ctx, "Successfully created DNS record!", http.StatusOK, http.MethodPost, zone)
 	} else {
-		util.APIResponse(ctx, "Failed creating DNS record with error: "+status, http.StatusInternalServerError, http.MethodPost, nil)
+		util.APIResponse(ctx, status, http.StatusInternalServerError, http.MethodPost, nil)
 	}
 }

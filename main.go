@@ -5,6 +5,7 @@ import (
 	route "whm-api/routes"
 	util "whm-api/utils"
 	"whm-api/utils/db"
+	dbSetup "whm-api/utils/db/setup"
 
 	"github.com/docker/docker/client"
 	"github.com/gin-contrib/cors"
@@ -18,6 +19,7 @@ import (
 func main() {
 
 	db.Setup()
+	dbSetup.AddUserAndSchema()
 	router := SetupRouter()
 
 	log.Fatal(router.Run(":" + util.GodotEnv("GO_PORT")))
@@ -50,6 +52,7 @@ func SetupRouter() *gin.Engine {
 	route.InitWordPressRoutes(apiRouter, cli)
 	route.InitStackRoutes(apiRouter, cli)
 	route.InitCloudFlareRoutes(apiRouter)
+	route.InitAuthRoutes(apiRouter)
 
 	return router
 }

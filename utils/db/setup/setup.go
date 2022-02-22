@@ -25,7 +25,7 @@ func insertAdmin() {
 
 	var dbUser users.User
 	if err := db.DB.Get(&dbUser, "select * from users where email = $1;", email); err == nil {
-		fmt.Printf("Admin already exists!")
+		fmt.Println("Admin already exists!")
 		return
 	}
 

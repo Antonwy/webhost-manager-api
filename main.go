@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
+	"net/http"
 	route "whm-api/routes"
 	util "whm-api/utils"
+	"whm-api/utils/auth"
 	"whm-api/utils/db"
 	dbSetup "whm-api/utils/db/setup"
 
@@ -11,6 +13,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/supertokens/supertokens-golang/supertokens"
 )
 
 // example: https://github.com/restuwahyu13/gin-rest-api
@@ -20,6 +23,7 @@ func main() {
 
 	db.Setup()
 	dbSetup.AddUserAndSchema()
+	auth.Setup()
 	router := SetupRouter()
 
 	log.Fatal(router.Run(":" + util.GodotEnv("GO_PORT")))
@@ -37,7 +41,13 @@ func SetupRouter() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000", "https://antonwy.me"},
+		AllowMethods: []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
+		AllowHeaders: append([]string{"content-type"},
+			supertokens.GetAllCORSHeaders()...),
+		AllowCredentials: true,
+	}))
 
 	router.Use(gzip.Gzip(gzip.BestCompression))
 
@@ -47,7 +57,17 @@ func SetupRouter() *gin.Engine {
 		panic(err)
 	}
 
+	router.Use(func(c *gin.Context) {
+		supertokens.Middleware(http.HandlerFunc(
+			func(rw http.ResponseWriter, r *http.Request) {
+				c.Next()
+			})).ServeHTTP(c.Writer, c.Request)
+
+		c.Abort()
+	})
+
 	apiRouter := router.Group("/v1")
+
 	route.InitDockerRoutes(apiRouter, cli)
 	route.InitWordPressRoutes(apiRouter, cli)
 	route.InitStackRoutes(apiRouter, cli)

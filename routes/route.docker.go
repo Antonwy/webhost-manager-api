@@ -18,9 +18,6 @@ import (
 	cloudflareControllers "whm-api/controllers/cloudflare-controllers"
 	handlerCloudflare "whm-api/handlers/cloudflare-handlers"
 
-	authControllers "whm-api/controllers/auth-controllers"
-	handlerAuth "whm-api/handlers/auth-handlers"
-
 	"github.com/docker/docker/client"
 )
 
@@ -64,11 +61,4 @@ func InitCloudFlareRoutes(router *gin.RouterGroup) {
 	router.GET("/zones", listZonesHandler.ListZonesHandler)
 	router.GET("/zones/:id/records", listDNSHandler.ListDNSHandler)
 	router.POST("/zones/:id/records", createDNSRecordHandler.CreateDNSRecordHandler)
-}
-
-func InitAuthRoutes(router *gin.RouterGroup) {
-	authController := authControllers.NewController()
-	loginHandler := handlerAuth.NewHandler(authController)
-
-	router.POST("/login", loginHandler.LoginHandler)
 }

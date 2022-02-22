@@ -5,18 +5,17 @@ services:
     restart: unless-stopped
     container_name: whm-api
     environment:
-      - GO_ENV=production
+      - GO_ENV=dev
       - GO_PORT=3000
       - GIN_MODE=release
       - POSTGRES_DB=whm-db
       - POSTGRES_USER=whm
       - POSTGRES_PASSWORD=whm-pass-123
       - VIRTUAL_HOST=api.antonwy.me,www.api.antonwy.me
-      - LETSENCRYPT_HOST=api.antonwy.me,www.api.antonwy.me
-      - LETSENCRYPT_EMAIL=anton.wyrowski@gmail.com
       - CLOUDFLARE_TOKEN=4sH0NB9cojjtKMeq3n4ln8IFxw3sG4aj4qYhtWG0
       - USER_EMAIL=anton.wyrowski@gmail.com
       - USER_PASSWORD=p6mPx6XPqNXeKCn7
+      - AUTH_KEY=Akjnv3iunvsoi8=-sackjij3ncisds
     ports:
       - 3001:3000
     volumes:
@@ -32,6 +31,16 @@ services:
       - POSTGRES_PASSWORD=whm-pass-123
     ports: 
       - 5432:5432
+
+  whm-auth:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:latest
+    restart: unless-stopped
+    container_name: whm-auth
+    environment:
+      - API_KEYS=Akjnv3iunvsoi8=-sackjij3ncisds
+      - VIRTUAL_HOST=auth.antonwy.me,www.auth.antonwy.me
+    ports: 
+      - 3567:3567
 
 networks:
   default:

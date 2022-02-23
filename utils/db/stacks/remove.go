@@ -1,7 +1,8 @@
 package stacks
 
 import (
-	"fmt"
+	"log"
+	"os"
 	"whm-api/utils/db"
 )
 
@@ -20,7 +21,14 @@ func (stack *Stack) Remove() error {
 	_, err := db.DB.NamedExec("delete from stacks where id = :id;", stack)
 
 	if err != nil {
-		fmt.Printf("Failed deleting stack with id: %s because %s\n", stack.ID, err)
+		log.Printf("Failed deleting stack with id: %s because %s\n", stack.ID, err)
+		return err
+	}
+
+	dirName := stack.DirectoryName()
+
+	if err := os.RemoveAll("/data/stacks/" + dirName); err != nil {
+		log.Printf("Failed removing directory %s because: %s\n", dirName, err)
 		return err
 	}
 

@@ -19,6 +19,7 @@ services:
     ports:
       - 3001:3000
     volumes:
+      - ./whm-data:/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   whm-db:

@@ -1,41 +1,39 @@
 package stacks
 
 import (
-	"whm-api/utils/docker/network"
+	"fmt"
+	"os"
+	"os/exec"
+
+	"whm-api/utils/cli"
+
+	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
 )
 
-func (stack *Stack) StackStart() error {
-	for i := range stack.Containers {
-		if stack.NetworkID != "" {
-			stack.Containers[i].NetworkName = stack.NetworkName
-		}
+func (stack Stack) StackStart() error {
 
-		if stack.Url != "" {
-			stack.Containers[i].ConnectToProxyNetwork = true
-		}
+	res, err := yaml.Marshal(stack.Project)
 
-		if err := stack.Containers[i].Validate(); err != nil {
-			return err
-		}
+	if err != nil {
+		return errors.Wrap(err, "Couldn't create YAML!")
 	}
 
-	if networkName := stack.NetworkName; networkName != "" {
-		id, err := network.Create(networkName, stack.Config)
+	dirName := stack.DirectoryName()
 
-		if err != nil {
-			return err
-		}
+	errCreateFile := os.WriteFile(fmt.Sprintf("%s/%s/docker-compose.yaml", StacksDirectoryPath, dirName), res, 0644)
 
-		stack.NetworkID = id
+	if errCreateFile != nil {
+		return errors.Wrap(err, "Couldn't create compose file!")
 	}
 
-	for i := range stack.Containers {
-		stack.Containers[i].NetworkID = stack.NetworkID
-		if err := stack.Containers[i].QuickStart(); err != nil {
-			stack.Remove()
-			return err
-		}
+	cmd := exec.Command("docker-compose", "up", "-d")
+	cmd.Dir = fmt.Sprintf("%s/%s", StacksDirectoryPath, dirName)
 
+	upErr := cli.Run(cmd)
+
+	if upErr != nil {
+		return errors.Wrap(err, "Couldn't start compose file!")
 	}
 
 	return nil

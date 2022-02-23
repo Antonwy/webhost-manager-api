@@ -2,6 +2,8 @@ package stacks
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"whm-api/utils/db"
 	"whm-api/utils/docker"
 
@@ -14,7 +16,14 @@ func (stack *Stack) Create() error {
 	_, err := db.DB.NamedExec(insertQuery, stack)
 
 	if err != nil {
-		fmt.Printf("Failed inserting stack: %s because: %s\n", stack, err)
+		log.Printf("Failed inserting stack: %s because: %s\n", stack, err)
+		return err
+	}
+
+	dirName := stack.DirectoryName()
+
+	if err := os.MkdirAll("/data/stacks/"+dirName, os.ModePerm); err != nil {
+		log.Printf("Failed creating directory %s because: %s\n", dirName, err)
 		return err
 	}
 

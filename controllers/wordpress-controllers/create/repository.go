@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	util "whm-api/utils"
+
 	"whm-api/utils/db/stacks"
 	"whm-api/utils/docker"
-	dockerContainer "whm-api/utils/docker/container"
 
+	"github.com/compose-spec/compose-go/types"
 	"github.com/docker/docker/client"
-	"github.com/docker/go-connections/nat"
 )
 
 const mariadbImage = "mariadb:latest"
@@ -45,6 +45,8 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 	wpContainerName := util.WordPressContainerName(input.Name)
 	wpNetworkName := wpContainerName + "_network"
 	wpDatabaseName := wpContainerName + "_db"
+	wpVolumeDatabaseName := wpContainerName + "_db_volume"
+	wpVolumeName := wpContainerName + "_volume"
 	stackType := "WordPress"
 
 	stack := stacks.Stack{
@@ -62,22 +64,6 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		return stacks.Stack{}, "Couldn't create new container stack with name " + input.Name
 	}
 
-	mariadb := dockerContainer.DockerContainer{
-		Config: config,
-		Name:   wpDatabaseName,
-		Image:  mariadbImage,
-		Env: []string{
-			fmt.Sprintf("MYSQL_ROOT_PASSWORD=%s", input.DBPassword),
-			"MYSQL_DATABASE=wordpress",
-			fmt.Sprintf("MYSQL_USER=%s", input.DBUsername),
-			fmt.Sprintf("MYSQL_PASSWORD=%s", input.DBPassword),
-		},
-		Volumes: map[string]struct{}{
-			"/" + wpDatabaseName: {},
-		},
-		StackID: stack.ID,
-	}
-
 	virtualHostUrls := []string{stack.Url, "www." + stack.Url}
 	virtualHostsJoined := strings.Join(virtualHostUrls, ",")
 
@@ -85,7 +71,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		fmt.Sprintf("WORDPRESS_DB_USER=%s", input.DBUsername),
 		fmt.Sprintf("WORDPRESS_DB_PASSWORD=%s", input.DBPassword),
 		"WORDPRESS_DB_NAME=wordpress",
-		fmt.Sprintf("WORDPRESS_DB_HOST=%s", mariadb.Name),
+		fmt.Sprintf("WORDPRESS_DB_HOST=%s", wpDatabaseName),
 		fmt.Sprintf("VIRTUAL_HOST=%s", virtualHostsJoined),
 	}
 
@@ -94,25 +80,63 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		envs = append(envs, fmt.Sprintf("LETSENCRYPT_EMAIL=%s", input.SSLEmail))
 	}
 
-	wp := dockerContainer.DockerContainer{
-		Config:    config,
-		Name:      wpContainerName,
-		Image:     wordPressImage,
-		Env:       envs,
-		NetworkID: mariadb.NetworkID,
-		PortBindings: map[nat.Port]nat.Port{
-			"0": "80/tcp",
+	wpPorts, _ := types.ParsePortConfig("0:80")
+	project := types.Project{
+		Services: types.Services{
+			{
+				Name:          wpDatabaseName,
+				Image:         mariadbImage,
+				ContainerName: wpDatabaseName,
+				Restart:       "always",
+				Environment: types.NewMappingWithEquals([]string{
+					fmt.Sprintf("MYSQL_ROOT_PASSWORD=%s", input.DBPassword),
+					"MYSQL_DATABASE=wordpress",
+					fmt.Sprintf("MYSQL_USER=%s", input.DBUsername),
+					fmt.Sprintf("MYSQL_PASSWORD=%s", input.DBPassword),
+				}),
+				Volumes: []types.ServiceVolumeConfig{
+					{
+						Source: wpVolumeDatabaseName,
+						Target: "/var/lib/mysql",
+						Type:   "volume",
+					},
+				},
+			},
+			{
+				Name:          wpContainerName,
+				Image:         wordPressImage,
+				ContainerName: wpContainerName,
+				Restart:       "always",
+				Environment:   types.NewMappingWithEquals(envs),
+				Volumes: []types.ServiceVolumeConfig{
+					{
+						Source: wpVolumeName,
+						Target: "/var/www/html",
+						Type:   "volume",
+					},
+				},
+				Ports: wpPorts,
+			},
 		},
-		StackID: stack.ID,
+		Volumes: types.Volumes{
+			wpVolumeDatabaseName: types.VolumeConfig{},
+			wpVolumeName:         types.VolumeConfig{},
+		},
+		Networks: types.Networks{
+			"default": {
+				Name: docker.ProxyNetworkName,
+				External: types.External{
+					External: true,
+				},
+			},
+		},
 	}
 
-	stack.Containers = []dockerContainer.DockerContainer{
-		mariadb, wp,
-	}
+	stack.Project = project
 
 	if err := stack.StackStart(); err != nil {
 		stack.Remove()
-		return stacks.Stack{}, "Couldn't create new container stack because " + err.Error()
+		return stacks.Stack{}, "Couldn't create new stack because " + err.Error()
 	}
 
 	return stack, http.StatusText(http.StatusOK)

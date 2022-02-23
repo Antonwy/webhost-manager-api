@@ -1,8 +1,11 @@
 package stacks
 
 import (
+	"strings"
 	"whm-api/utils/docker"
 	dockerContainer "whm-api/utils/docker/container"
+
+	"github.com/compose-spec/compose-go/types"
 )
 
 type Stack struct {
@@ -14,6 +17,7 @@ type Stack struct {
 	NetworkID   string                            `json:"network_id"`
 	Type        string                            `db:"type"  json:"type"`
 	Url         string                            `db:"url"  json:"url"`
+	Project     types.Project                     `json:"-"`
 }
 
 func (stack Stack) Response() ResponseStack {
@@ -24,6 +28,20 @@ func (stack Stack) Response() ResponseStack {
 		Type:        stack.Type,
 		Url:         stack.Url,
 	}
+}
+
+const StacksDirectoryPath = "/data/stacks"
+
+func (stack Stack) DirectoryName() string {
+	if stack.Url != "" {
+		return stack.Url
+	}
+
+	fileName := stack.Name
+	fileName = strings.ReplaceAll(fileName, " ", "_")
+	fileName = strings.ToLower(fileName)
+
+	return fileName
 }
 
 type ResponseStack struct {

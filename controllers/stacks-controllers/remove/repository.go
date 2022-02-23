@@ -1,14 +1,13 @@
 package removeStack
 
 import (
-	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
+	"whm-api/utils/cli"
 	"whm-api/utils/db"
-	db_containers "whm-api/utils/db/containers"
 	"whm-api/utils/db/stacks"
-	"whm-api/utils/docker"
-	"whm-api/utils/docker/network"
 
 	"github.com/docker/docker/client"
 )
@@ -28,38 +27,35 @@ func NewRepository(client *client.Client) *repository {
 }
 
 func (r *repository) RemoveStackRepository(id string) string {
-
-	ctx := context.Background()
-	config := docker.Config{
-		Context: ctx, Client: r.client,
-	}
-
 	stack, err := stacks.GetFromID(id)
 	if err != nil {
 		fmt.Println(err)
 		return "Couldn't get stack with ID: " + id
 	}
 
-	containers, err := db_containers.ListContainersFromStack(id)
+	// if id, err := network.IdFromName(stack.NetworkName, config); err == nil {
+	// 	if err := network.Remove(id, config); err != nil {
+	// 		return "Couldn't remove network " + stack.NetworkName
+	// 	}
+	// } else {
+	// 	return err.Error()
+	// }
 
-	if err != nil {
-		fmt.Println(err)
-		return "Error: Could't find any containers from stack!"
+	dirName := stack.DirectoryName()
+
+	cmd := exec.Command("docker-compose", "down", "-v")
+	cmd.Dir = fmt.Sprintf("%s/%s", stacks.StacksDirectoryPath, dirName)
+
+	downErr := cli.Run(cmd)
+
+	if downErr != nil {
+		return "Couldn't remove compose file!"
 	}
 
-	for _, container := range containers {
-		if err := container.RemoveWithContainer(config); err != nil {
-			fmt.Println(err)
-			return "Couldn't remove container " + container.ID
-		}
-	}
+	errRemoveDir := os.RemoveAll(fmt.Sprintf("%s/%s", stacks.StacksDirectoryPath, dirName))
 
-	if id, err := network.IdFromName(stack.NetworkName, config); err == nil {
-		if err := network.Remove(id, config); err != nil {
-			return "Couldn't remove network " + stack.NetworkName
-		}
-	} else {
-		return err.Error()
+	if errRemoveDir != nil {
+		return "Couldn't remove stack directory!"
 	}
 
 	if _, err := db.DB.Exec("delete from stacks where id = $1;", id); err != nil {

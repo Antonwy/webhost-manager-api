@@ -43,7 +43,7 @@ func (r *repository) RemoveStackRepository(id string) string {
 
 	dirName := stack.DirectoryName()
 
-	cmd := exec.Command("docker-compose", "down", "-v")
+	cmd := exec.Command("docker-compose", "down", "-v", "--remove-orphans")
 	cmd.Dir = fmt.Sprintf("%s/%s", stacks.StacksDirectoryPath, dirName)
 
 	downErr := cli.Run(cmd)

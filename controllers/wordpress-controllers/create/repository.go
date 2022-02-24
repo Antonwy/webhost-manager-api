@@ -3,7 +3,9 @@ package createWordPress
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	util "whm-api/utils"
@@ -80,6 +82,13 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		envs = append(envs, fmt.Sprintf("LETSENCRYPT_EMAIL=%s", input.SSLEmail))
 	}
 
+	phpConfigPath := fmt.Sprintf("%s/%s/uploads.ini", stacks.StacksDirectoryPath, stack.DirectoryName())
+	log.Println(phpConfigPath)
+	if _, err := os.Create(phpConfigPath); err != nil {
+		stack.Remove()
+		return stacks.Stack{}, "Couldn't create php-conf directory because " + err.Error()
+	}
+
 	wpPorts, _ := types.ParsePortConfig("0:80")
 	project := types.Project{
 		Services: types.Services{
@@ -114,6 +123,11 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 						Target: "/var/www/html",
 						Type:   "volume",
 					},
+					{
+						Source: "./uploads.ini",
+						Target: "/usr/local/etc/php/conf.d/uploads.ini",
+						Type:   "bind",
+					},
 				},
 				Ports: wpPorts,
 			},
@@ -136,6 +150,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 
 	if err := stack.StackStart(); err != nil {
 		stack.Remove()
+		// os.RemoveAll(fmt.Sprintf("%s/%s", stacks.StacksDirectoryPath, stack.DirectoryName()))
 		return stacks.Stack{}, "Couldn't create new stack because " + err.Error()
 	}
 

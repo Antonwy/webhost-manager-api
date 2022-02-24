@@ -8,10 +8,11 @@ import (
 	"strings"
 )
 
-const ErrorStart = "Error response from daemon: "
 const (
 	PortAlreadyAllocated = "Port Is Already Allocated"
 	DockerComposePath    = "/usr/local/bin"
+	ErrorStart           = "Error response from daemon: "
+	ExitStatus           = "exit status "
 )
 
 func Run(cmd *exec.Cmd) error {
@@ -28,9 +29,9 @@ func Run(cmd *exec.Cmd) error {
 			line := scanner.Text()
 
 			if strings.Contains(line, ErrorStart) {
-				log.Println(line)
 				scannerError <- errors.New(strings.Title(strings.TrimPrefix(line, ErrorStart)))
 			}
+
 			log.Println(line)
 		}
 

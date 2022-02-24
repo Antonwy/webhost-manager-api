@@ -30,9 +30,7 @@ func (stack Stack) StackStart() error {
 	cmd := exec.Command("docker-compose", "up", "-d")
 	cmd.Dir = fmt.Sprintf("%s/%s", StacksDirectoryPath, dirName)
 
-	upErr := cli.Run(cmd)
-
-	if upErr != nil {
+	if err := cli.Run(cmd); err != nil {
 		return errors.Wrap(err, "Couldn't start compose file!")
 	}
 

@@ -2,7 +2,6 @@ package stacks
 
 import (
 	"log"
-	"os"
 	"whm-api/utils/db"
 )
 
@@ -25,12 +24,12 @@ func (stack *Stack) Remove() error {
 		return err
 	}
 
-	dirName := stack.DirectoryName()
+	// dirName := stack.DirectoryName()
 
-	if err := os.RemoveAll("/data/stacks/" + dirName); err != nil {
-		log.Printf("Failed removing directory %s because: %s\n", dirName, err)
-		return err
-	}
+	// if err := os.RemoveAll("/data/stacks/" + dirName); err != nil {
+	// 	log.Printf("Failed removing directory %s because: %s\n", dirName, err)
+	// 	return err
+	// }
 
 	return nil
 }

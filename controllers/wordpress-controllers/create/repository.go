@@ -89,7 +89,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		return stacks.Stack{}, "Couldn't create php-conf directory because " + err.Error()
 	}
 
-	wpPorts, _ := types.ParsePortConfig("0:80")
+	wpPorts, _ := types.ParsePortConfig("80")
 	project := types.Project{
 		Services: types.Services{
 			{
@@ -124,8 +124,8 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 						Type:   "volume",
 					},
 					{
-						Source: "./uploads.ini",
-						Target: "/usr/local/etc/php/conf.d/uploads.ini",
+						Source: ".",
+						Target: "/usr/local/etc/php/conf.d:ro",
 						Type:   "bind",
 					},
 				},

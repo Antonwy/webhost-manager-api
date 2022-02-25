@@ -123,11 +123,12 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 						Target: "/var/www/html",
 						Type:   "volume",
 					},
-					{
-						Source: ".",
-						Target: "/usr/local/etc/php/conf.d:ro",
-						Type:   "bind",
-					},
+					// {
+					// 	Source: ".",
+					// 	Target: "/usr/local/etc/php/conf.d:ro",
+					// 	Type:   "bind",
+					// 	Bind:   &types.ServiceVolumeBind{CreateHostPath: true},
+					// },
 				},
 				Ports: wpPorts,
 			},

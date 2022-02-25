@@ -1,5 +1,8 @@
 FROM --platform=linux/amd64 golang:alpine
 
+# RUN useradd -u 8877 whm
+# USER whm
+
 COPY --from=docker/compose:1.29.2 /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 # Move to working directory /build

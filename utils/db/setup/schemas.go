@@ -37,4 +37,42 @@ const initialSchema string = `
 
     create unique index if not exists containers_id_uindex
         on containers (id);
+
+    create table if not exists roles
+    (
+        role varchar not null
+            constraint roles_pk
+                primary key,
+        name varchar not null
+    );
+
+    alter table roles
+        owner to whm;
+
+    create table if not exists users
+    (
+        name  varchar not null,
+        id    varchar not null
+            constraint users_pk
+                primary key,
+        email varchar not null,
+        role  varchar default 'admin'::character varying
+            constraint users_roles_role_fk
+                references roles
+    );
+
+    alter table users
+        owner to whm;
+
+    create table if not exists domains
+    (
+        name varchar not null
+            constraint domains_pk
+                primary key
+    );
+
+    alter table domains
+        owner to whm;
+
+    insert into roles (role, name) values ('admin', 'Administrator') ON CONFLICT DO NOTHING
 `

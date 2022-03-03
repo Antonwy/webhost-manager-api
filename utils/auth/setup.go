@@ -4,6 +4,7 @@ import (
 	util "whm-api/utils"
 
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
+	"github.com/supertokens/supertokens-golang/recipe/emailpassword/epmodels"
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
 )
@@ -24,7 +25,26 @@ func Setup() {
 			WebsiteBasePath: &websiteBasePath,
 		},
 		RecipeList: []supertokens.Recipe{
-			emailpassword.Init(nil),
+			emailpassword.Init(&epmodels.TypeInput{
+				SignUpFeature: &epmodels.TypeInputSignUp{
+					FormFields: []epmodels.TypeInputFormField{
+						{
+							ID: "name",
+						},
+					},
+				},
+				Override: &epmodels.OverrideStruct{
+					APIs: func(originalImplementation epmodels.APIInterface) epmodels.APIInterface {
+						originalSignUpPOST := *originalImplementation.SignUpPOST
+
+						(*originalImplementation.SignUpPOST) = func(formFields []epmodels.TypeFormField, options epmodels.APIOptions) (epmodels.SignUpResponse, error) {
+							return SignUp(formFields, options, originalSignUpPOST)
+						}
+
+						return originalImplementation
+					},
+				},
+			}),
 			session.Init(nil),
 		},
 	})

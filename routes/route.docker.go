@@ -2,6 +2,8 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
+	userControllers "whm-api/controllers/user-controllers"
+	userHandlers "whm-api/handlers/user-handlers"
 
 	listContainers "whm-api/controllers/docker-controllers/container-controllers/list"
 	listStacks "whm-api/controllers/stacks-controllers/list"
@@ -61,4 +63,11 @@ func InitCloudFlareRoutes(router *gin.RouterGroup) {
 	router.GET("/zones", listZonesHandler.ListZonesHandler)
 	router.GET("/zones/:id/records", listDNSHandler.ListDNSHandler)
 	router.POST("/zones/:id/records", createDNSRecordHandler.CreateDNSRecordHandler)
+}
+
+func InitUserRoutes(router *gin.RouterGroup) {
+	userController := userControllers.NewController()
+	getUserHandler := userHandlers.NewHandler(userController)
+
+	router.GET("/users/:id", getUserHandler.Get)
 }

@@ -71,6 +71,7 @@ func SetupRouter() *gin.Engine {
 	route.InitWordPressRoutes(apiRouter, cli)
 	route.InitStackRoutes(apiRouter, cli)
 	route.InitCloudFlareRoutes(apiRouter)
+	route.InitUserRoutes(apiRouter)
 
 	return router
 }

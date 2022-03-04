@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"whm-api/middleware"
 	route "whm-api/routes"
 	util "whm-api/utils"
 	"whm-api/utils/auth"
@@ -64,6 +65,9 @@ func SetupRouter() *gin.Engine {
 
 		c.Abort()
 	})
+
+	router.Use(middleware.VerifySession(nil))
+	router.Use(middleware.ExtractSessionData)
 
 	apiRouter := router.Group("/v1")
 

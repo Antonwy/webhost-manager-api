@@ -67,6 +67,7 @@ func InitUserRoutes(router *gin.RouterGroup) {
 	userController := userControllers.NewController()
 	userHandler := userHandlers.NewHandler(userController)
 
+	router.GET("/users/me", userHandler.GetMe)
 	router.GET("/users/:id", userHandler.Get)
 	router.GET("/users", userHandler.List)
 }

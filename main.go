@@ -42,7 +42,7 @@ func SetupRouter() *gin.Engine {
 	}
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:3000", "https://antonwy.me"},
+		AllowOrigins: []string{"http://localhost:3000", "http://127.0.0.1:3000", "https://antonwy.me"},
 		AllowMethods: []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
 		AllowHeaders: append([]string{"content-type"},
 			supertokens.GetAllCORSHeaders()...),

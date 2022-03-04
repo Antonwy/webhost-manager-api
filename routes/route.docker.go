@@ -56,18 +56,17 @@ func InitStackRoutes(router *gin.RouterGroup, cli *client.Client) {
 
 func InitCloudFlareRoutes(router *gin.RouterGroup) {
 	cloudflareController := cloudflareControllers.NewController()
-	listZonesHandler := handlerCloudflare.NewHandler(cloudflareController)
-	listDNSHandler := handlerCloudflare.NewHandler(cloudflareController)
-	createDNSRecordHandler := handlerCloudflare.NewHandler(cloudflareController)
+	cloudflareHandler := handlerCloudflare.NewHandler(cloudflareController)
 
-	router.GET("/zones", listZonesHandler.ListZonesHandler)
-	router.GET("/zones/:id/records", listDNSHandler.ListDNSHandler)
-	router.POST("/zones/:id/records", createDNSRecordHandler.CreateDNSRecordHandler)
+	router.GET("/zones", cloudflareHandler.ListZonesHandler)
+	router.GET("/zones/:id/records", cloudflareHandler.ListDNSHandler)
+	router.POST("/zones/:id/records", cloudflareHandler.CreateDNSRecordHandler)
 }
 
 func InitUserRoutes(router *gin.RouterGroup) {
 	userController := userControllers.NewController()
-	getUserHandler := userHandlers.NewHandler(userController)
+	userHandler := userHandlers.NewHandler(userController)
 
-	router.GET("/users/:id", getUserHandler.Get)
+	router.GET("/users/:id", userHandler.Get)
+	router.GET("/users", userHandler.List)
 }

@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"log"
 	util "whm-api/utils"
+	"whm-api/utils/db/users"
 
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword/epmodels"
@@ -37,7 +39,7 @@ func Setup() {
 					APIs: func(originalImplementation epmodels.APIInterface) epmodels.APIInterface {
 						originalSignUpPOST := *originalImplementation.SignUpPOST
 
-						(*originalImplementation.SignUpPOST) = func(formFields []epmodels.TypeFormField, options epmodels.APIOptions) (epmodels.SignUpResponse, error) {
+						*originalImplementation.SignUpPOST = func(formFields []epmodels.TypeFormField, options epmodels.APIOptions) (epmodels.SignUpResponse, error) {
 							return SignUp(formFields, options, originalSignUpPOST)
 						}
 
@@ -52,4 +54,27 @@ func Setup() {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	user := users.User{
+		Email: util.GodotEnv("DEFAULT_EMAIL"),
+		Name:  util.GodotEnv("DEFAULT_USERNAME"),
+		Role:  "admin",
+	}
+
+	response, err := emailpassword.SignUp(user.Email, util.GodotEnv("DEFAULT_PASSWORD"))
+	if err != nil {
+		log.Println("Couldn't signup default user!")
+		panic(err.Error())
+	}
+
+	if response.OK != nil {
+		user.ID = response.OK.User.ID
+		if err := user.Create(); err != nil {
+			log.Println("Couldn't create default user for db!")
+			panic(err.Error())
+		}
+
+		log.Println(response)
+	}
+
 }

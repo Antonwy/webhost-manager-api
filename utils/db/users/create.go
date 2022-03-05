@@ -10,9 +10,8 @@ const insertQuery string = "INSERT INTO users (id, name, email, role) VALUES (:i
 func (user User) Create() error {
 	_, err := db.DB.NamedExec(insertQuery, user)
 
-	log.Printf("Failed creating user: %s because: %s\n", user, err)
-
 	if err != nil {
+		log.Printf("Failed creating user: %s because: %s\n", user, err)
 		return err
 	}
 

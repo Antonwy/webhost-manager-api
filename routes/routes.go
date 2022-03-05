@@ -3,7 +3,13 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 	userControllers "whm-api/controllers/user-controllers"
+	updateUserController "whm-api/controllers/user-controllers/update"
+	zoneControllers "whm-api/controllers/zone-controllers"
+	createZoneController "whm-api/controllers/zone-controllers/create"
 	userHandlers "whm-api/handlers/user-handlers"
+	updateUserHandler "whm-api/handlers/user-handlers/update"
+	zoneHandlers "whm-api/handlers/zone-handlers"
+	createZoneHandler "whm-api/handlers/zone-handlers/create"
 
 	listContainers "whm-api/controllers/docker-controllers/container-controllers/list"
 	listStacks "whm-api/controllers/stacks-controllers/list"
@@ -58,16 +64,33 @@ func InitCloudFlareRoutes(router *gin.RouterGroup) {
 	cloudflareController := cloudflareControllers.NewController()
 	cloudflareHandler := handlerCloudflare.NewHandler(cloudflareController)
 
-	router.GET("/zones", cloudflareHandler.ListZonesHandler)
-	router.GET("/zones/:id/records", cloudflareHandler.ListDNSHandler)
-	router.POST("/zones/:id/records", cloudflareHandler.CreateDNSRecordHandler)
+	cloudflareApi := router.Group("/cloudflare")
+	cloudflareApi.GET("/zones", cloudflareHandler.ListZonesHandler)
+	cloudflareApi.GET("/zones/:id/records", cloudflareHandler.ListDNSHandler)
+	cloudflareApi.POST("/zones/:id/records", cloudflareHandler.CreateDNSRecordHandler)
 }
 
 func InitUserRoutes(router *gin.RouterGroup) {
 	userController := userControllers.NewController()
 	userHandler := userHandlers.NewHandler(userController)
+	updateUserC := updateUserController.NewController()
+	updateUserH := updateUserHandler.NewHandler(updateUserC)
 
 	router.GET("/users/me", userHandler.GetMe)
 	router.GET("/users/:id", userHandler.Get)
+	router.PUT("/users/:id", updateUserH.Update)
 	router.GET("/users", userHandler.List)
+}
+
+func InitZoneRoutes(router *gin.RouterGroup) {
+	zoneController := zoneControllers.NewController()
+	zoneHandler := zoneHandlers.NewHandler(zoneController)
+	createZoneC := createZoneController.NewController()
+	createZoneH := createZoneHandler.NewHandler(createZoneC)
+
+	router.GET("/zones", zoneHandler.List)
+	router.GET("/zones/:id", zoneHandler.Get)
+	router.DELETE("/zones/:id", zoneHandler.Remove)
+	router.POST("/zones", createZoneH.Create)
+	router.POST("/zones/sync", zoneHandler.Sync)
 }

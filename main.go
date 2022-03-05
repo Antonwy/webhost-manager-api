@@ -76,6 +76,7 @@ func SetupRouter() *gin.Engine {
 	route.InitStackRoutes(apiRouter, cli)
 	route.InitCloudFlareRoutes(apiRouter)
 	route.InitUserRoutes(apiRouter)
+	route.InitZoneRoutes(apiRouter)
 
 	return router
 }

@@ -2,6 +2,7 @@ package util
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -17,4 +18,14 @@ func GodotEnv(key string) string {
 	}
 
 	return <-env
+}
+
+func GodotEnvBool(key string, defaultVal bool) bool {
+	b, err := strconv.ParseBool(GodotEnv(key))
+
+	if err != nil {
+		return defaultVal
+	} else {
+		return b
+	}
 }

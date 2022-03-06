@@ -47,6 +47,12 @@ type RecordCreatedResponse struct {
 	Messages []interface{}   `json:"messages"`
 }
 
+type RecordDeletedResponse struct {
+	Success  bool            `json:"success"`
+	Errors   []ResponseError `json:"errors"`
+	Messages []interface{}   `json:"messages"`
+}
+
 type ResponseError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

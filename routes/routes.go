@@ -68,6 +68,7 @@ func InitCloudFlareRoutes(router *gin.RouterGroup) {
 	cloudflareApi.GET("/zones", cloudflareHandler.ListZonesHandler)
 	cloudflareApi.GET("/zones/:id/records", cloudflareHandler.ListDNSHandler)
 	cloudflareApi.POST("/zones/:id/records", cloudflareHandler.CreateDNSRecordHandler)
+	cloudflareApi.DELETE("/zones/:zoneId/records/:recordId", cloudflareHandler.DeleteRecordHandler)
 }
 
 func InitUserRoutes(router *gin.RouterGroup) {

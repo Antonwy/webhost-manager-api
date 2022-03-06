@@ -48,3 +48,24 @@ func Post(route string, body io.Reader, decode interface{}) error {
 
 	return nil
 }
+
+func Delete(route string, decode interface{}) error {
+	req, err := http.NewRequest(http.MethodDelete, URL+route, nil)
+
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", "Bearer "+util.GodotEnv("CLOUDFLARE_TOKEN"))
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&decode); err != nil {
+		return err
+	}
+
+	return nil
+}

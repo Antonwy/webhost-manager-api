@@ -10,6 +10,7 @@ type Controller interface {
 	ListZonesController() ([]cloudflareZones.Zone, string)
 	ListDNSController(zoneID string) ([]cloudflareDns.Record, string)
 	CreateDNSRecordController(zoneID string, body io.ReadCloser) (cloudflareDns.Record, string)
+	DeleteRecordController(zoneID string, recordID string) string
 }
 
 type controller struct{}

@@ -44,7 +44,7 @@ func (r *repository) RemoveStackRepository(id string) string {
 	dirName := stack.DirectoryName()
 
 	cmd := exec.Command("docker-compose", "down", "-v", "--remove-orphans")
-	cmd.Dir = fmt.Sprintf("%s/%s", stacks.StacksDirectoryPath, dirName)
+	cmd.Dir = fmt.Sprintf("%s/%s", stacks.DirectoryPath(), dirName)
 
 	downErr := cli.Run(cmd)
 
@@ -52,7 +52,7 @@ func (r *repository) RemoveStackRepository(id string) string {
 		return "Couldn't remove compose file!"
 	}
 
-	errRemoveDir := os.RemoveAll(fmt.Sprintf("%s/%s", stacks.StacksDirectoryPath, dirName))
+	errRemoveDir := os.RemoveAll(fmt.Sprintf("%s/%s", stacks.DirectoryPath(), dirName))
 
 	if errRemoveDir != nil {
 		return "Couldn't remove stack directory!"

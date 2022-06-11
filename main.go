@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/static"
 	"log"
 	"net/http"
 	"whm-api/middleware"
@@ -21,7 +22,6 @@ import (
 // another: https://dev.to/techschoolguru/implement-restful-http-api-in-go-using-gin-4ap1
 
 func main() {
-
 	db.Setup()
 	dbSetup.InitSchema()
 	auth.Setup()
@@ -57,6 +57,8 @@ func SetupRouter() *gin.Engine {
 		panic(err)
 	}
 
+	router.Use(static.Serve("/templateFiles", static.LocalFile("templates", false)))
+
 	router.Use(func(c *gin.Context) {
 		supertokens.Middleware(http.HandlerFunc(
 			func(rw http.ResponseWriter, r *http.Request) {
@@ -77,6 +79,7 @@ func SetupRouter() *gin.Engine {
 	route.InitCloudFlareRoutes(apiRouter)
 	route.InitUserRoutes(apiRouter)
 	route.InitZoneRoutes(apiRouter)
+	route.InitTemplatesRoutes(apiRouter)
 
 	return router
 }

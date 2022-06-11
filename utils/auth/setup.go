@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
 	"log"
 	util "whm-api/utils"
@@ -16,9 +17,10 @@ func Setup() {
 	apiBasePath := "/v1/auth"
 	websiteBasePath := "/auth"
 	cookiesSecure := util.GodotEnvBool("SECURE_COOKIES", true)
+
 	err := supertokens.Init(supertokens.TypeInput{
 		Supertokens: &supertokens.ConnectionInfo{
-			ConnectionURI: "http://whm-auth:3567",
+			ConnectionURI: fmt.Sprintf("http://%s:3567", util.GodotEnv("AUTH_HOST")),
 			APIKey:        util.GodotEnv("AUTH_KEY"),
 		},
 		AppInfo: supertokens.AppInfo{

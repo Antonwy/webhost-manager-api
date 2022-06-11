@@ -44,7 +44,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		Client:  cli,
 	}
 
-	wpContainerName := util.WordPressContainerName(input.Name)
+	wpContainerName := util.LoweredAndUnderscored(input.Name)
 	wpNetworkName := wpContainerName + "_network"
 	wpDatabaseName := wpContainerName + "_db"
 	wpVolumeDatabaseName := wpContainerName + "_db_volume"
@@ -82,7 +82,7 @@ func (r *repository) CreateWordPressRepository(input *InputCreateWordPress) (sta
 		envs = append(envs, fmt.Sprintf("LETSENCRYPT_EMAIL=%s", input.SSLEmail))
 	}
 
-	phpConfigPath := fmt.Sprintf("%s/%s/uploads.ini", stacks.StacksDirectoryPath, stack.DirectoryName())
+	phpConfigPath := fmt.Sprintf("%s/%s/uploads.ini", stacks.DirectoryPath(), stack.DirectoryName())
 	log.Println(phpConfigPath)
 	if _, err := os.Create(phpConfigPath); err != nil {
 		stack.Remove()

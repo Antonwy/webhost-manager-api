@@ -2,9 +2,9 @@ package util
 
 import "strings"
 
-func WordPressContainerName(name string) string {
-	lowercased := strings.ToLower(name)
+func LoweredAndUnderscored(text string) string {
+	lowercased := strings.ToLower(text)
 	underscored := strings.ReplaceAll(lowercased, " ", "_")
 
-	return "wp_" + underscored
+	return underscored
 }

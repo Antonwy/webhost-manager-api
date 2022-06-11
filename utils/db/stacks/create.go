@@ -1,7 +1,6 @@
 package stacks
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"whm-api/utils/db"
@@ -38,28 +37,11 @@ func Create(config docker.Config, name string) (Stack, error) {
 		Config: config,
 	}
 
-	_, err := db.DB.NamedExec(insertQuery, stack)
-
-	if err != nil {
-		fmt.Printf("Failed inserting stack: %s because: %s\n", stack, err)
-		return Stack{}, err
-	}
+	stack.Create()
 
 	return stack, nil
 }
 
 func GenerateStackID() string {
 	return uuid.Generate().String()
-}
-
-func CreateWithNetwork(config docker.Config, name string, networkName string) (Stack, error) {
-	stack, err := Create(config, name)
-
-	if err != nil {
-		return Stack{}, err
-	}
-
-	stack.NetworkName = networkName
-
-	return stack, nil
 }

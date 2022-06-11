@@ -2,10 +2,14 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
+	createStackController "whm-api/controllers/stacks-controllers/create"
+	templateControllers "whm-api/controllers/template-controllers"
 	userControllers "whm-api/controllers/user-controllers"
 	updateUserController "whm-api/controllers/user-controllers/update"
 	zoneControllers "whm-api/controllers/zone-controllers"
 	createZoneController "whm-api/controllers/zone-controllers/create"
+	createStackHandler "whm-api/handlers/stacks-handlers/create"
+	templateHandlers "whm-api/handlers/template-handlers"
 	userHandlers "whm-api/handlers/user-handlers"
 	updateUserHandler "whm-api/handlers/user-handlers/update"
 	zoneHandlers "whm-api/handlers/zone-handlers"
@@ -56,8 +60,12 @@ func InitStackRoutes(router *gin.RouterGroup, cli *client.Client) {
 	removeStackService := removeStack.NewService(removeStackRepository)
 	removeStackHandler := removeStackHandler.NewHandler(removeStackService)
 
+	createStackC := createStackController.NewController()
+	createStackH := createStackHandler.NewHandler(createStackC)
+
 	router.GET("/stacks", listStacksHandler.ListStacksHandler)
 	router.DELETE("/stacks/:id", removeStackHandler.RemoveStackHandler)
+	router.POST("/stacks", createStackH.CreateStackHandler)
 }
 
 func InitCloudFlareRoutes(router *gin.RouterGroup) {
@@ -94,4 +102,11 @@ func InitZoneRoutes(router *gin.RouterGroup) {
 	router.DELETE("/zones/:id", zoneHandler.Remove)
 	router.POST("/zones", createZoneH.Create)
 	router.POST("/zones/sync", zoneHandler.Sync)
+}
+
+func InitTemplatesRoutes(router *gin.RouterGroup) {
+	templatesController := templateControllers.NewController()
+	templatesHandler := templateHandlers.NewHandler(templatesController)
+
+	router.GET("/templates", templatesHandler.List)
 }

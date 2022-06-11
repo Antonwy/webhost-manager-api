@@ -8,7 +8,9 @@ services:
       - GO_ENV=$GO_ENV
       - GO_PORT=$GO_PORT
       - GIN_MODE=$GIN_MODE
+      - POSTGRES_HOST=$POSTGRES_HOST
       - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_AUTH=whm-db
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - VIRTUAL_HOST=$VIRTUAL_HOST_API
@@ -16,14 +18,16 @@ services:
       - USER_EMAIL=$USER_EMAIL
       - USER_PASSWORD=$USER_PASSWORD
       - AUTH_KEY=$AUTH_KEY
+      - AUTH_HOST=whm-auth
       - DEFAULT_USERNAME=$DEFAULT_USERNAME
       - DEFAULT_EMAIL=$DEFAULT_EMAIL
       - DEFAULT_PASSWORD=$DEFAULT_PASSWORD
       - SECURE_COOKIES=$SECURE_COOKIES
+      - BASE_PATH=$BASE_PATH
     ports:
-      - "3001:3000"
+      - "3001:3001"
     volumes:
-      - ./whm-data:/data
+      - ./whm-data:$BASE_PATH
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   whm-db:

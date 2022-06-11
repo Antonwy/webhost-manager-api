@@ -1,7 +1,8 @@
 package stacks
 
 import (
-	"strings"
+	util "whm-api/utils"
+	"whm-api/utils/constants"
 	"whm-api/utils/docker"
 	dockerContainer "whm-api/utils/docker/container"
 
@@ -12,9 +13,9 @@ type Stack struct {
 	ID          string                            `db:"id" json:"id"`
 	Name        string                            `db:"name" json:"name"`
 	Config      docker.Config                     `json:"config"`
-	Containers  []dockerContainer.DockerContainer `json:"containers"`
+	Containers  []dockerContainer.DockerContainer `json:"-"`
 	NetworkName string                            `db:"network_name"  json:"network_name"`
-	NetworkID   string                            `json:"network_id"`
+	NetworkID   string                            `json:"-"`
 	Type        string                            `db:"type"  json:"type"`
 	Url         string                            `db:"url"  json:"url"`
 	Project     types.Project                     `json:"-"`
@@ -30,7 +31,9 @@ func (stack Stack) Response() ResponseStack {
 	}
 }
 
-const StacksDirectoryPath = "/data/stacks"
+func DirectoryPath() string {
+	return constants.BasePath() + "/stacks"
+}
 
 func (stack Stack) DirectoryName() string {
 	if stack.Url != "" {
@@ -38,10 +41,8 @@ func (stack Stack) DirectoryName() string {
 	}
 
 	fileName := stack.Name
-	fileName = strings.ReplaceAll(fileName, " ", "_")
-	fileName = strings.ToLower(fileName)
 
-	return fileName
+	return util.LoweredAndUnderscored(fileName)
 }
 
 type ResponseStack struct {
